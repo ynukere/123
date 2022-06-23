@@ -60,6 +60,7 @@ figure
 plot(t,y,t,ya)
 %kp dla 1 rzedu 0.34
 kp=(0.68*T)/(ko*tau);
+%Ti da 1 rzedu samo T
 Ti=2*T;
 Td=Ti/4;
 
