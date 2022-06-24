@@ -1,0 +1,51 @@
+%transmitancja zastępcza k/Ts+1 /// (k/Ts+1)^2 /// k/s
+%opóźnienie przed - Tau (*e^-tau s)
+
+l=30;
+m=conv([1 2],conv([1 5],[1 5]));
+t=0:0.01:10;
+y=step(l,m,t);
+plot(t,y)
+
+%NORMALIZACJA, 1
+yn=y/max(y);
+figure, plot(t,yn)
+
+%punkt przegięcia 
+[M1 i]=max(diff(yn));
+h=yn(i);
+
+[t' yn]
+t10=0.31;
+t90=1.65;
+
+%stała czasowa (1 2.2)
+T=(t90-t10)/3.3;
+%opóźnienie tau (1 0.1)
+tau=t10-0.53*T;
+
+%TRANSMITANCJA ZASTĘPCZA 
+ko=max(y);
+[lp mp]=pade(tau,8);
+%licznik aproksymowany
+la=conv(lp,ko);
+ma=conv(conv([T 1],[T 1]),mp);
+ya=step(la,ma,t);
+figure, plot(t,y,t,ya)
+
+%kp (1 0.34)
+kp=(0.68*T)/(ko*tau);
+%Ti 1 (T)
+Ti=2*T;
+Td=Ti/4;
+
+P=kp;
+I=kp/Ti;
+D=kp*Td;
+
+%SIMULINK
+%Sources>step, Sinks>scope, Math operations>sum, continuous>Transter fcn,
+%PID controller
+%Kolejność step>sum>PID>transfer>(powrot do sumy!)>scope
+%step steptime = 0, PID do P=P I=I D=D,Transfer l ; m
+
